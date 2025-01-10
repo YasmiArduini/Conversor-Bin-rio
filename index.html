@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conversor Binário</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Montserrat", sans-serif;
+        background-color: #f0f2f5;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+      }
+
+      .container {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+      }
+
+      img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: blur(5px);
+        z-index: -1;
+      }
+
+      .form-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.9); /* Fundo mais transparente */
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 450px;
+      }
+
+      .form-overlay h1, .form-overlay h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .form-overlay input,
+      .form-overlay select,
+      .form-overlay button {
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        width: calc(100% - 24px);
+        background-color: #f9f9f9;
+        color: #333;
+        transition: all 0.3s ease;
+      }
+
+      .form-overlay input:focus,
+      .form-overlay select:focus,
+      .form-overlay button:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
+      }
+
+      .form-overlay button {
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+      }
+
+      .form-overlay button:hover {
+        background-color: #0056b3;
+      }
+
+      .form-overlay .result {
+        margin-top: 20px;
+        font-size: 16px;
+        background-color: #e9ecef;
+        padding: 15px;
+        border-radius: 8px;
+        color: #333;
+        border: 1px solid #ddd;
+        text-align: center;
+        transition: background-color 0.3s ease;
+      }
+
+      .form-overlay .result:hover {
+        background-color: #dee2e6;
+      }
+
+      .sidebar {
+        position: absolute;
+        top: 50%;
+        left: 20px;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .sidebar button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .sidebar button:hover {
+        background-color: #0056b3;
+      }
+
+      .sidebar button i {
+        font-size: 20px;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <img src="background.gif" alt="Background" />
+      <div class="sidebar">
+        <button onclick="showSection('converter')">
+          <i class="fas fa-exchange-alt"></i>
+        </button>
+        <button onclick="showSection('calculator')">
+          <i class="fas fa-calculator"></i>
+        </button>
+        <button onclick="showSection('decoder')">
+          <i class="fas fa-code"></i>
+        </button>
+      </div>
+      <div class="form-overlay">
+        <div id="converter" class="section">
+          <h1>Conversor Binário</h1>
+          <input
+            type="text"
+            id="inputValue"
+            placeholder="Digite um número ou texto..."
+          />
+          <button onclick="convertToBinary()">Converter para Binário</button>
+          <p class="result" id="binaryResult">Resultado será mostrado aqui</p>
+        </div>
+
+        <div id="calculator" class="section hidden">
+          <h2>Calculadora Binária</h2>
+          <input type="text" id="binary1" placeholder="Primeiro número binário" />
+          <input type="text" id="binary2" placeholder="Segundo número binário" />
+          <select id="operation">
+            <option value="add">Adicionar</option>
+            <option value="subtract">Subtrair</option>
+            <option value="multiply">Multiplicar</option>
+            <option value="divide">Dividir</option>
+          </select>
+          <button onclick="calculateBinary()">Calcular</button>
+          <p class="result" id="calcResult">Resultado será mostrado aqui</p>
+        </div>
+
+        <div id="decoder" class="section hidden">
+          <h2>Decodificador Binário</h2>
+          <input type="text" id="binaryInput" placeholder="Digite o código binário" />
+          <button onclick="decodeBinary()">Decodificar</button>
+          <p class="result" id="decodeResult">Resultado será mostrado aqui</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showSection(sectionId) {
+        document.querySelectorAll('.section').forEach(section => {
+          section.classList.add('hidden');
+        });
+        document.getElementById(sectionId).classList.remove('hidden');
+      }
+
+      function convertToBinary() {
+        let inputValue = document.getElementById("inputValue").value;
+        let binaryResult = "";
+
+        if (!isNaN(inputValue)) {
+          binaryResult = parseInt(inputValue).toString(2);
+        } else {
+          for (let i = 0; i < inputValue.length; i++) {
+            binaryResult += inputValue.charCodeAt(i).toString(2) + " ";
+          }
+        }
+
+        document.getElementById(
+          "binaryResult"
+        ).innerText = `Binário: ${binaryResult.trim()}`;
+      }
+
+      function calculateBinary() {
+        let binary1 = document.getElementById("binary1").value;
+        let binary2 = document.getElementById("binary2").value;
+        let operation = document.getElementById("operation").value;
+
+        let num1 = parseInt(binary1, 2);
+        let num2 = parseInt(binary2, 2);
+        let result;
+
+        switch (operation) {
+          case "add":
+            result = num1 + num2;
+            break;
+          case "subtract":
+            result = num1 - num2;
+            break;
+          case "multiply":
+            result = num1 * num2;
+            break;
+          case "divide":
+            result = Math.floor(num1 / num2);
+            break;
+          default:
+            result = 0;
+        }
+
+        document.getElementById(
+          "calcResult"
+        ).innerText = `Resultado: ${result.toString(2)}`;
+      }
+
+      function decodeBinary() {
+        let binaryInput = document.getElementById("binaryInput").value;
+        let binaryArray = binaryInput.split(" ");
+        let decodedResult = "";
+
+        binaryArray.forEach(binary => {
+          decodedResult += String.fromCharCode(parseInt(binary, 2));
+        });
+
+        document.getElementById(
+          "decodeResult"
+        ).innerText = `Texto: ${decodedResult}`;
+      }
+    </script>
+  </body>
+</html>
